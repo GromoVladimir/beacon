@@ -1,0 +1,8 @@
+{
+  "name": "AshBeacon.EditModeTests",
+  "rootNamespace": "AshBeacon.Tests",
+  "references": ["AshBeacon.Domain", "AshBeacon.Application"],
+  "includePlatforms": ["Editor"],
+  "optionalUnityReferences": ["TestAssemblies"],
+  "noEngineReferences": true
+}

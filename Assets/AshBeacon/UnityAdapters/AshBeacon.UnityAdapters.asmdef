@@ -1,0 +1,5 @@
+{
+  "name": "AshBeacon.UnityAdapters",
+  "rootNamespace": "AshBeacon",
+  "references": ["AshBeacon.Application", "Unity.ugui", "Unity.TextMeshPro"]
+}

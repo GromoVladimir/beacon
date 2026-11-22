@@ -1,0 +1,5 @@
+{
+  "name": "AshBeacon.Composition",
+  "rootNamespace": "AshBeacon",
+  "references": ["AshBeacon.Domain", "AshBeacon.Application", "AshBeacon.UnityAdapters"]
+}

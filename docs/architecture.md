@@ -1,10 +1,10 @@
 # Архитектура
 
-Статус: базовый план MVP согласован 22.11.2026, см. [решения](decisions.md). Основание: [требования](requirements.md) и GDD §17. Ни одна описанная ниже игровая система пока не реализована. После выполненного владельцем обновления версии ниже сверены с ProjectVersion и manifest; импорт и сборку ещё предстоит проверить в T01/T06.
+Статус: базовый план MVP согласован 22.11.2026, см. [решения](decisions.md). Основание: [требования](requirements.md) и GDD §17. В T02 реализованы каркас сцен, управление временной сессией и явная композиция; остальные системы ниже остаются планом. T01 проверила импорт, новая структура прошла EditMode 6/6 и PlayMode 3/3; сборка нового каркаса остаётся T06. См. [отчёт T02](reports/T02-bootstrap.md).
 
 ## 1. Фактическая исходная точка
 
-Репозиторий уже является Unity-проектом: `Assets/Scenes/SampleScene.unity`, URP 2D renderer/settings, стандартный `InputSystem_Actions.inputactions`, `Packages/manifest.json`, `Packages/packages-lock.json`, `ProjectSettings/`. Игровых C#-скриптов при подготовке SDD нет. В Build Settings включена только SampleScene. Наличие Input Actions ещё не означает настроенное управление игры.
+Репозиторий уже является Unity-проектом: `Assets/Scenes/SampleScene.unity`, URP 2D renderer/settings, стандартный `InputSystem_Actions.inputactions`, `Packages/manifest.json`, `Packages/packages-lock.json`, `ProjectSettings/`. При подготовке SDD игровых C#-скриптов не было. После T02 в Build Settings включены Bootstrap, MainMenu, Gameplay (в таком порядке); SampleScene сохранена как исходный шаблон. Наличие Input Actions ещё не означает настроенное управление игры.
 
 | Компонент | Зафиксировано в проекте | Решение |
 |---|---|---|
@@ -48,7 +48,7 @@ flowchart TD
 
 Стрелка — compile-time зависимость. `Application` объявляет порты (`ISaveRepository`, `IRoomLoader`, `IGameClock`); Infrastructure/UnityAdapters реализуют их. Обратных зависимостей ядра от реализации нет. Bootstrap создаёт сервисы и передаёт зависимости; контейнер сервисов через статический singleton не нужен.
 
-| Модуль / будущая asmdef | Ответственность | Не делает |
+| Модуль / asmdef (Infrastructure и Editor — план) | Ответственность | Не делает |
 |---|---|---|
 | AshBeacon.Domain | DamageRules, InventoryState, RewardTransaction, DoorConditions, Progression, reset policies, DTO | Не обращается к GameObject, Physics2D, файлам, UI |
 | AshBeacon.Application | NewGame/LoadGame, UseItem, ApplyHits, OpenDoor, Purchase, EnterRoom, BossAttempt; координация транзакций | Не рисует, не сериализует через конкретное API |
@@ -113,7 +113,7 @@ Domain и Application: `noEngineReferences`, независимые от UnityEn
 
 ## 7. Предлагаемая структура директорий
 
-Это план, каталоги реализации создаются по задачам, пустые заглушки сейчас не добавляются.
+Это план, каталоги реализации создаются по задачам, пустые заглушки сейчас не добавляются. В T02 фактически используются `Assets/AshBeacon/{Domain,Application,UnityAdapters,Composition,Tests,UI}` и существующий каталог `Assets/Scenes` для трёх сцен. Таблица ниже — предложение дальнейшей организации, не описание уже созданных путей; перемещать текущие ассеты ради совпадения с планом не требуется. Границы сборок и направление зависимостей соответствуют §3.
 
 | Путь | Назначение |
 |---|---|

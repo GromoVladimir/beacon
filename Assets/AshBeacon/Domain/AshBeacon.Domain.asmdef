@@ -1,0 +1,5 @@
+{
+  "name": "AshBeacon.Domain",
+  "rootNamespace": "AshBeacon",
+  "noEngineReferences": true
+}

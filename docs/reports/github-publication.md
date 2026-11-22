@@ -1,5 +1,54 @@
 # Подготовка к публикации GitHub — 22.11.2026
 
+## Публикация каркаса T02
+
+Исходный HEAD / origin/main: `6aa1c85d56ec7d4cb34907fa211c25b8b9bb7c6a`.
+GitHub CLI авторизован, существующий репозиторий PRIVATE; доступ не менялся.
+Публикуются каркас Bootstrap/MainMenu/Gameplay, Domain/Application, адаптеры,
+композиция, тесты, TMP Essentials с лицензией OFL и документация T02.
+Существовавшая нормализация URP/Quality и SceneTemplateSettings сохранена.
+Manifest/lock и версия Editor не обновлялись.
+
+- Повторный Unity EditMode: **6/6 PASS**, 0 failed/skipped.
+- Повторный Unity PlayMode: **3/3 PASS**, 0 failed/skipped, 2,24 с.
+  Запрос запуска вернул HTTP 400 при domain reload; итог получен отдельно
+  через `test status(detail: full)` после завершения.
+- `Test-ApplicationFlow.ps1`: **6 PASS** через Mono; дополнительная проверка ядра.
+- `Test-Baseline.ps1`: **15 сценариев PASS**.
+- Live `Verify-Baseline.cs`: **PASS**, Editor 6000.6.10f1, Android,
+  129 объектов / 87 компонентов / пять сцен без отсутствующих ссылок и скриптов.
+- README проверен: запуск через Bootstrap, кнопки перехода и команды тестов.
+  Локальные Markdown-ссылки: **PASS**.
+- `.gitignore` проверен через `git check-ignore`: секреты, Library/Temp/Logs,
+  Builds/TestResults и локальные сохранения исключены. Поиск распространённых
+  токенов/закрытых ключей и опасных путей в отслеживаемых и новых файлах:
+  совпадений нет. Поля keystore/пароля пусты. Это не гарантия обнаружения любого секрета.
+- Первый статический прогон пересёкся с очисткой временной InitTestScene
+  после PlayMode и завершился FileNotFoundException; он не считается PASS.
+- Повторный `Check-Baseline.ps1` завершился: **PASS**, exit 0,
+  166 Assets entries / 83 project GUIDs. Прогон занял несколько минут.
+- Android Development build: **Succeeded**, 486031 мс, 0 ошибок,
+  982 предупреждения (debug symbols/Diagnostics Data и шейдеры пакетов).
+  Build ID `build_4de52eeb6fcb`; сцены Bootstrap, MainMenu, Gameplay.
+  Команда MCP `build run`: target Android, options Development,
+  output `Builds/PublicationT02/AshBeacon.apk`; размер по BuildReport 987161806 байт.
+  SHA256 APK: `50162AE09B370CE4A204F82A1BC7B8B79303C4C4EC62DFDBC5C628301FCA3251`.
+  APK исключён из Git. Телефон и чистый checkout не проверены; T06 не принята.
+- До проверок сохранена копия Assets/ProjectSettings. После сборки восстановлены
+  только пять отличавшихся файлов: DefaultVolumeProfile, UniversalRP,
+  UniversalRenderPipelineGlobalSettings, ProjectSettings, UnityConnectSettings.
+  Все изменения, существовавшие до публикации, сохранены, включая настройки.
+  Сборка проверяла текущий Editor с его автоматической сериализацией;
+  отдельная сборка чистого клона итогового коммита не выполнялась.
+- Финальный индекс: 147 файлов. LFS-фильтр шрифта и наличие локального объекта
+  подтверждены, `git lfs fsck` — OK. Вне индекса изменений нет.
+  `git diff --cached --check` для кода/документов/скриптов — PASS;
+  общая проверка сообщает 274 замечания форматирования Unity meta/YAML и
+  импортированных TMP-файлов (концевые пробелы, отступы, пустые строки в конце).
+  Массовое форматирование ассетов и сторонних шейдеров не выполнялось.
+
+Предыдущие разделы ниже — исторические результаты до T02.
+
 ## Повторная публикация после T01
 
 Исходный HEAD и origin/main: `37c341582ec2f4240a6c2525315b9aef5e122500`.

@@ -1,6 +1,6 @@
 # Тестирование и сборка
 
-Статус: план проверок согласованного MVP, 22.11.2026. Основное устройство — Samsung S25 Ultra; перед замером записать фактические Android, RAM, разрешение и режим производительности. Тестовые сборки, build entrypoints и CI пока **не созданы**. Команды ниже — инструкция для будущих этапов после появления тестов; успешные результаты текущему шаблону не приписываются.
+Статус: план проверок согласованного MVP, 22.11.2026. Основное устройство — Samsung S25 Ultra; перед замером записать фактические Android, RAM, разрешение и режим производительности. T02 добавила test asmdef: 6 EditMode и 3 PlayMode прошли. Build entrypoints и CI пока **не созданы**. При подготовке публикации Android Development APK каркаса собран через MCP: Succeeded, 0 ошибок, 982 предупреждения. Проверен импортированный проект; телефон и чистый checkout не проверены. Подробности — [отчёт T02](reports/T02-bootstrap.md) и [отчёт публикации](reports/github-publication.md).
 
 ## 1. Уровни проверки
 
@@ -44,7 +44,7 @@
 1. Установить через Unity Hub **6000.6.10f1** и Android Build Support с SDK/NDK/OpenJDK этой версии, проверить лицензию. Не открывать проект более новым Editor автоматически.
 2. При клонировании проверить Git LFS: `.gitattributes` уже направляет изображения/аудио и другие бинарные файлы в LFS. Выполнить `git lfs install`, `git lfs pull` при наличии LFS-объектов; не коммитить указатели вместо отсутствующих ассетов.
 3. Открыть корень проекта, дождаться восстановления пакетов из manifest/lock и импорта. Console без ошибок, Missing Script/asset; включены Visible Meta Files и Force Text (проверить, не считать настроенными заранее).
-4. Сейчас стартовая сцена — `Assets/Scenes/SampleScene.unity`. После T02 запускать Bootstrap; после T06 выбирать созданный профиль Android Development. До этого кнопка Play показывает только шаблон.
+4. Стартовая сцена — `Assets/Scenes/Bootstrap.unity`: меню → пустая комната → меню. Открыть её вручную; не переопределять Play Mode Start Scene, чтобы Test Runner запускал собственную сцену. Профиль Android Development создаётся в T06.
 5. Запустить EditMode и PlayMode через Window → General → Test Runner. Отсутствие тестов не означает зелёную приёмку.
 
 `.env` в runtime не нужен: игра офлайн, конфигурация баланса хранится в definitions. `.env.example` сейчас не создаётся. Локальный путь Editor задаётся переменной PowerShell, секреты release/CI — защищёнными переменными CI и внешним keystore, никогда Assets/Resources/StreamingAssets.
@@ -96,7 +96,9 @@ SDK/NDK/JDK; перед приёмкой сверить путь с ожидае
 
 ### Unity Test Runner
 
-После появления test asmdef команды запускаются из корня репозитория при закрытом Editor для этого проекта. Путь к Editor — пример стандартной установки, при другой установке изменить переменную. TestResults/Logs создаются и не попадают в Git.
+T02: в Window → General → Test Runner запустить сборки `AshBeacon.EditModeTests` (6 тестов) и `AshBeacon.PlayModeTests` (3 теста). Текущий результат: все PASS, без failed/skipped. Дополнительно `./tools/Test-ApplicationFlow.ps1` запускает те же чистые тесты через Mono установленного Editor; это не Unity Test Runner и не проверка сцен. Скрипт создания `tools/Create-T02Scenes.cs` предназначен только для новых сцен и отказывается перезаписывать существующие.
+
+Test asmdef созданы в T02. Следующие batch-команды запускаются из корня репозитория при закрытом Editor для этого проекта. Путь к Editor — пример стандартной установки, при другой установке изменить переменную. TestResults/Logs создаются и не попадают в Git.
 
 ```powershell
 $unityEditor = 'C:\Program Files\Unity\Hub\Editor\6000.6.10f1\Editor\Unity.exe'
