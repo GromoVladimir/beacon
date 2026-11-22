@@ -21,7 +21,7 @@
 
 Unity **6000.6.10f1**, C#, URP **17.6.0** / 2D Renderer, Input System **1.20.1**, uGUI **2.6.0**, Unity Test Framework **1.8.0**. Точные зависимости — в `Packages/manifest.json` и `packages-lock.json`. Не обновлять Editor/пакеты автоматически.
 
-1. При работе с клоном установить Git LFS и загрузить LFS-объекты, если они есть; `.gitattributes` уже содержит правила для бинарных ассетов.
+1. Клонировать `https://github.com/GromoVladimir/beacon.git` (нужен доступ к приватному репозиторию). Установить Git LFS, выполнить `git lfs install` и `git lfs pull` из корня клона; `.gitattributes` содержит правила для бинарных ассетов.
 2. Через Unity Hub установить точный Editor. Для телефона нужны Android Build Support, SDK/NDK/OpenJDK.
 3. Добавить корень репозитория как существующий проект и дождаться восстановления пакетов/импорта.
 4. Открыть `Assets/Scenes/SampleScene.unity`. Сейчас Play запускает только шаблон; игровых Bootstrap/MainMenu/Gameplay ещё нет.
@@ -48,4 +48,6 @@ Unity EditMode/PlayMode и Android-сборку. Игровых тестовых
 
 ## Следующий шаг
 
-T01 начата, но **BLOCKED**: live Editor недоступен через CLI, импорт и Console не подтверждены. Добавлены статическая проверка `tools/Check-Baseline.ps1` и её изолированные проверки `tools/Test-Baseline.ps1`; результаты — в [отчёте T01](docs/reports/T01-baseline.md). Продолжить проверку T01 при доступном Editor; T02 пока не начинать. На Samsung S25 Ultra перед первым замером записать фактическую версию Android, RAM и разрешение. Android-сборка ещё не выполнялась.
+T01 **DONE**: статический baseline, 15 сценариев валидатора и live-проверка двух сцен через Unity MCP прошли; Console при проверке T01 без ошибок и предупреждений. Исправлены устаревшие ссылки двух ассетов шаблона. Воспроизводимая live-проверка — `tools/Verify-Baseline.cs`; результаты и ограничения — в [отчёте T01](docs/reports/T01-baseline.md). Следующая задача — T02 (Bootstrap/MainMenu/Gameplay), в этой работе она не начата. S0 целиком ещё не принят. На Samsung S25 Ultra перед первым замером записать фактическую версию Android, RAM и разрешение.
+
+При подготовке публикации собран Android Development APK шаблона: Succeeded, 0 ошибок, 979 предупреждений. Проверка выполнена в текущем импортированном каталоге, на телефоне APK не запускался; это не приёмка T06. Подробности — в [отчёте публикации](docs/reports/github-publication.md).

@@ -57,5 +57,12 @@ Write-Fixture 'Assets/Orphan.meta' 'guid: invalid'
 Expect-Failure 'invalid GUID' 'Invalid meta GUID'
 Write-Fixture 'Assets/Orphan.meta' 'guid: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
 & $check -ProjectPath $fixture
-Write-Output 'PASS: restored fixture; 13 scenarios completed'
+Write-Output 'PASS: restored fixture'
+Write-Fixture 'Assets/Second.asset' 'reference: {guid: cccccccccccccccccccccccccccccccc}'
+Write-Fixture 'Library/PackageCache/com.example.cached@1/Resource.asset.meta' "fileFormatVersion: 2`nguid: cccccccccccccccccccccccccccccccc`nImporter: { payload: test }"
+& $check -ProjectPath $fixture
+Write-Output 'PASS: imported package reference'
+Write-Fixture 'Assets/Second.asset' 'reference: {guid: dddddddddddddddddddddddddddddddd}'
+Expect-Failure 'unresolved reference with populated cache' 'Unresolved GUID'
+Write-Output 'PASS: 15 scenarios completed'
 # Оставить небольшую fixture в Temp для разбора при необходимости; исходники проекта не меняются.

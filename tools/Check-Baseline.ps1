@@ -66,11 +66,17 @@ foreach ($guid in $projectGuids.Keys) { $knownGuids[$guid] = $true }
 foreach ($packageRoot in @('Packages', 'Library/PackageCache')) {
     $path = Join-Path $root $packageRoot
     if (Test-Path -LiteralPath $path) {
-        foreach ($meta in Get-ChildItem -LiteralPath $path -Filter '*.meta' -Recurse -File) {
-            $content = [IO.File]::ReadAllText($meta.FullName)
-            if ($content -match '(?m)^guid: ([a-fA-F0-9]{32})\s*$') {
-                $knownGuids[$Matches[1].ToLowerInvariant()] = $true
-            }
+        foreach ($meta in [IO.Directory]::EnumerateFiles($path, '*.meta', [IO.SearchOption]::AllDirectories)) {
+            # GUID is in the header; do not load large importer payloads for package assets.
+            $reader = [IO.File]::OpenText($meta)
+            try {
+                while ($null -ne ($line = $reader.ReadLine())) {
+                    if ($line -match '^guid: ([a-fA-F0-9]{32})\s*$') {
+                        $knownGuids[$Matches[1].ToLowerInvariant()] = $true
+                        break
+                    }
+                }
+            } finally { $reader.Dispose() }
         }
     }
 }

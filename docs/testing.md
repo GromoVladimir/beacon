@@ -72,8 +72,27 @@
 будущих этапов. Она не проверяет fileID/subassets, Missing Script, полноту package restore,
 сборку или чистый импорт. Кэш пакетов может содержать старые версии: окончательная
 проверка ссылок и импорта выполняется в Editor. Результат T01 — в
-[отчёте](reports/T01-baseline.md). Отсутствие HEAD мешает `git lfs fsck`; не выдавать
-это за успешную проверку истории LFS.
+[отчёте](reports/T01-baseline.md). При отсутствии HEAD нельзя выдавать `git lfs fsck`
+за успешную проверку истории LFS. На текущем HEAD проверка прошла.
+
+### Live-проверка T01
+
+На открытом проекте сначала прочитать `console status`, сохранив cursor. Через Unity MCP
+вызвать `script_eval` с `file: "tools/Verify-Baseline.cs"`, `timeout: 60`.
+Альтернатива при доступном CLI:
+
+```powershell
+unity command script eval --caller plugin --skill unity-cli --project-path C:\Repository\likeZelda --file tools/Verify-Baseline.cs --timeout 60 --format json
+```
+
+Скрипт проверяет версию, завершение импорта/компиляции, сериализацию, Android target/support,
+сериализованные ссылки ассетов и компоненты всех сцен через preview scenes, которые закрываются
+в finally. Открытые рабочие сцены не сохраняются. PASS содержит путь проекта, счётчики и пути
+SDK/NDK/JDK; перед приёмкой сверить путь с ожидаемым проектом. Затем проверить `console status`
+и новые ошибки через `console get` с сохранённого cursor. Не очищать Console.
+Скрипт находится вне Assets, не компилируется в Player и не является игровым EditMode-тестом.
+Текущий результат: static PASS, 15 сценариев валидатора PASS, live PASS (37 объектов,
+12 компонентов, две сцены), Console 0 errors / 0 warnings. Чистый checkout/build — T06.
 
 ### Unity Test Runner
 
