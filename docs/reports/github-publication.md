@@ -1,5 +1,57 @@
 # Подготовка к публикации GitHub — 22.11.2026
 
+## Публикация T03 в REVIEW
+
+Исходный HEAD / origin/main: `686a0327dacd0cff827f7a2eca5c7923a60ebba0`.
+Существующий репозиторий PRIVATE, авторизация GitHub CLI исправна; доступ не менялся.
+Публикуются текущие ввод/движение/взгляд/пауза, Gameplay, definition, тесты,
+инструменты проверки и документы. `docs/art-direction.md` сохраняется как Draft;
+публикация не утверждает его новые художественные параметры и не меняет GDD.
+T03 остаётся REVIEW до Android-приёмки, T04 не начинается.
+
+- Unity CLI 1.0.0 вне sandbox видит ready Editor 6000.6.10f1, проект
+  `C:/Repository/likeZelda`. Подключение MCP в sandbox Editor не обнаружило;
+  второй Editor не запускался. Обновления Editor/CLI/пакетов не выполнялись.
+- Исходная Console: 0 errors / 0 warnings, compilationFailed=false, cursor 6,
+  session `17481b4f94c34a709c0de97fd9087466`.
+- Повторные EditMode: **11/11 PASS**. PlayMode: **7/7 PASS**, 0 failed/skipped,
+  4,74 с; итог получен через `test status --detail full`.
+- `Verify-T03.cs`: **PASS**, missingScripts=0, bindings valid, speed=3,5,
+  body=0,65 × 0,65, definition GUID `0ef4039c656da364fbbd58314663dda5`.
+- `Test-Baseline.ps1`: **15 сценариев PASS**.
+- README содержит точную версию Editor, clone/LFS, Bootstrap и управление T03.
+  Локальные Markdown-ссылки, `git diff --check` отслеживаемых изменений: **PASS**.
+- Исключения Library/Temp/Logs/Builds/TestResults, .env, ключей подписи/лицензии
+  и локальных сохранений проверены через `git check-ignore`. Поиск опасных путей
+  и распространённых токенов/закрытых ключей в отслеживаемых и новых файлах:
+  совпадений нет. Поля подписи/паролей пусты. Произвольные секреты этим не исключаются.
+- До проверок сохранена копия текущих Assets/ProjectSettings в игнорируемом Temp.
+  Unity удалила этот временный каталог в ходе проверок. Пять файлов с побочными
+  изменениями build были чистыми по исходному git status и восстановлены из HEAD:
+  DefaultVolumeProfile, UniversalRP, UniversalRenderPipelineGlobalSettings,
+  ProjectSettings, UnityConnectSettings. Исходные изменения T03 не откатывались.
+- Полный `Check-Baseline.ps1`: **PASS**, exit 0, 188 Assets entries / 94 GUID.
+- Android Development build через CLI: **Succeeded**, build ID `build_cddeb79c7317`,
+  107790 мс, 0 ошибок, 971 предупреждение (включая Diagnostics Data/debug symbols
+  и шейдеры пакета inference/Sentis). Сцены из Build Settings:
+  Bootstrap, MainMenu, Gameplay. Команда `build run --target Android`,
+  options `["Development"]`, output `Builds/PublicationT03/AshBeacon.apk`.
+  Размер по BuildReport 987792898 байт; сам APK 70883024 байт.
+  SHA256 APK: `D288B07FD33620126343B59E640196F1C6DF97F7F4D7D18415EC364B21F8FD52`.
+  Полный BuildReport сохранён локально в `TestResults/PublicationT03-build.json`.
+  Оба артефакта игнорируются Git и не публикуются.
+- После сборки новых ошибок с cursor 6 нет: compilationFailed=false,
+  consoleErrors=0, consoleWarnings=81 (свёрнутые); Console не очищалась.
+- Проверен импортированный каталог с автоматической сериализацией Editor,
+  не чистый checkout итогового коммита. Проверка телефона не выполнена,
+  T03 остаётся REVIEW, T06 не считается принятой.
+- Финальный staged diff: 39 файлов, LFS fsck OK, вне индекса изменений нет.
+  Проверка ссылок PASS. `diff --check` сообщает только три намеренных
+  Markdown-переноса (два пробела в конце строки) в черновике art-direction.md;
+  код, сцены, meta, скрипты и остальные документы проходят проверку.
+
+Ниже — исторические результаты предыдущих публикаций.
+
 ## Публикация каркаса T02
 
 Исходный HEAD / origin/main: `6aa1c85d56ec7d4cb34907fa211c25b8b9bb7c6a`.

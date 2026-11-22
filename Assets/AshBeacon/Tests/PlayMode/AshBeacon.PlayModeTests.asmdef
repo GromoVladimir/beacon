@@ -1,6 +1,6 @@
 {
   "name": "AshBeacon.PlayModeTests",
   "rootNamespace": "AshBeacon.Tests",
-  "references": ["AshBeacon.Domain", "AshBeacon.Application", "AshBeacon.UnityAdapters", "AshBeacon.Composition", "Unity.ugui"],
+  "references": ["AshBeacon.Domain", "AshBeacon.Application", "AshBeacon.UnityAdapters", "AshBeacon.Composition", "Unity.ugui", "Unity.InputSystem"],
   "optionalUnityReferences": ["TestAssemblies"]
 }

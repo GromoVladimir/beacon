@@ -4,6 +4,10 @@
 
 ## 1. Уровни проверки
 
+T03: **REVIEW**, Editor 6000.6.10f1 через MCP: EditMode **11/11**, PlayMode **7/7**, skipped=0. Новые тесты: `PlayerControlsTests` (5) и `PlayerMovementTests` (4); регрессия T02 включена. `tools/Verify-T03.cs` проверяет ссылки Gameplay, missing scripts, definition и reset policy. Повторный PM после исправления измерения скорости прошёл; скорость измеряется по времени физики, а не числу render-кадров. Результаты и обязательный Android-чеклист — [отчёт T03](reports/T03-controls.md). Сырой JSON Test Runner сохраняется локально в игнорируемом TestResults; в Git остаётся сводка.
+
+Для статической `Check-Baseline.ps1` сначала завершить Test Runner и дождаться выхода из PlayMode: тестовый runner временно создаёт/удаляет `Assets/InitTestScene*.unity`, иначе возможна гонка чтения файлов. Это сбой конкурентного запуска проверки, а не broken asset. На текущей среде ADB daemon не запускается (`cannot connect to daemon`); Android-приёмка не выполнена, вместо неё не засчитывать PM.
+
 | Уровень | Что проверять | Когда |
 |---|---|---|
 | EditMode | Расчёт урона/брони/доступности, инвентарь/лимиты, ключи, транзакции, DTO/migrations, reset rules, seeded loot, graph conditions | В каждой задаче с изменением правил |
