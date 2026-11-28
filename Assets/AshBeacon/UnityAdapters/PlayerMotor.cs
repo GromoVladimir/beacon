@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using AshBeacon.Application;
 using AshBeacon.Domain;
 using UnityEngine;
@@ -12,12 +13,17 @@ namespace AshBeacon.UnityAdapters
         private PlayerDefinition definition;
         private Rigidbody2D body;
         private PhysicsMaterial2D material;
+        private CombatArena combat;
+        private ContactFilter2D solidWalls;
+        private readonly List<RaycastHit2D> knockbackHits = new List<RaycastHit2D>();
         public Rigidbody2D Body => body;
 
-        public void Initialize(PlayerControls input, PlayerDefinition settings)
+        public void Initialize(PlayerControls input, PlayerDefinition settings, CombatArena combatArena)
         {
             controls = input;
             definition = settings;
+            combat = combatArena;
+            solidWalls.SetLayerMask(LayerMask.GetMask("WorldSolid"));
             body = GetComponent<Rigidbody2D>();
             body.bodyType = RigidbodyType2D.Dynamic;
             body.gravityScale = 0;
@@ -33,16 +39,41 @@ namespace AshBeacon.UnityAdapters
         private void FixedUpdate()
         {
             if (controls == null) return;
-            controls.Advance(Time.fixedDeltaTime);
-            body.linearVelocity = controls.IsPaused ? Vector2.zero : new Vector2(controls.Move.X, controls.Move.Y) * definition.Speed;
+            if (controls.IsPaused)
+            {
+                Stop();
+                return;
+            }
+            float seconds = Time.fixedDeltaTime;
+            combat.Step(controls, body.position, seconds);
+            if (combat.Health.IsDead) Stop();
+            else if (combat.KnockbackSeconds > CombatBalance.TimeTolerance)
+                ApplyKnockback(seconds);
+            else
+                body.linearVelocity = controls.Move.ToUnityVector() * definition.Speed * SwordAttack.SpeedMultiplier(combat.Phase);
+            controls.Advance(seconds);
+        }
+
+        private void ApplyKnockback(float seconds)
+        {
+            Vector2 direction = combat.Health.LastHitDirection.ToUnityVector().normalized;
+            float duration = Mathf.Min(seconds, combat.KnockbackSeconds);
+            float distance = CombatBalance.KnockbackDistance * duration / (float)CombatBalance.KnockbackTime;
+            body.Cast(direction, solidWalls, knockbackHits, distance);
+            foreach (var hit in knockbackHits)
+            {
+                if (Vector2.Dot(hit.normal, direction) < 0)
+                    distance = Mathf.Min(distance, Mathf.Max(0, hit.distance - .005f));
+            }
+            body.linearVelocity = direction * (distance / seconds);
         }
 
         private void LateUpdate()
         {
             if (controls == null || facingMarker == null) return;
-            Vector2 direction = controls.Movement.Facing == Facing.Left ? Vector2.left :
-                controls.Movement.Facing == Facing.Right ? Vector2.right :
-                controls.Movement.Facing == Facing.Up ? Vector2.up : Vector2.down;
+            var facing = combat.Phase == SwordPhase.Idle ? controls.Movement.Facing : combat.Sword.Facing;
+            Vector2 direction = facing.ToUnityVector();
+            facingMarker.gameObject.SetActive(!combat.Health.IsDead);
             facingMarker.localPosition = (Vector3)(direction * .3f) + new Vector3(0, 0, -.1f);
         }
 

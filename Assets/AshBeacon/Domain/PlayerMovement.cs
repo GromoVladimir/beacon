@@ -4,6 +4,20 @@ namespace AshBeacon.Domain
 {
     public enum Facing { Down, Right, Up, Left }
 
+    public static class FacingExtensions
+    {
+        public static MoveVector Direction(this Facing facing)
+        {
+            switch (facing)
+            {
+                case Facing.Left: return new MoveVector(-1, 0);
+                case Facing.Right: return new MoveVector(1, 0);
+                case Facing.Up: return new MoveVector(0, 1);
+                default: return new MoveVector(0, -1);
+            }
+        }
+    }
+
     public readonly struct MoveVector
     {
         public MoveVector(float x, float y) { X = x; Y = y; }

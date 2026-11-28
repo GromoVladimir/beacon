@@ -4,9 +4,11 @@
 
 ## 1. Уровни проверки
 
-T03: **REVIEW**, Unity Editor 6000.6.10f1: EditMode **11/11**, PlayMode **9/9**, skipped=0. В прогон входят регрессия T02, пять тестов `PlayerControlsTests` и шесть тестов `PlayerMovementTests`, включая два сценария индикации кнопок. `tools/Verify-T03.cs` проверяет ссылки Gameplay, missing scripts, definition и reset policy. Повторный PM после исправления измерения скорости прошёл; скорость измеряется по времени физики, а не числу render-кадров. Результаты и обязательный Android-чеклист — [отчёт T03](reports/T03-controls.md). Сырой JSON Test Runner сохраняется локально в игнорируемом TestResults; в Git остаётся сводка.
+T03: **DONE**, принято владельцем 28.11.2026. Unity Editor 6000.6.10f1: EditMode **11/11**, PlayMode **9/9**, skipped=0. В прогон входят регрессия T02, пять тестов `PlayerControlsTests` и шесть тестов `PlayerMovementTests`, включая два сценария индикации кнопок. `tools/Verify-T03.cs` проверяет ссылки Gameplay, missing scripts, definition и reset policy. Повторный PM после исправления измерения скорости прошёл; скорость измеряется по времени физики, а не числу render-кадров. Результаты и чеклист мобильной проверки — [отчёт T03](reports/T03-controls.md). Сырой JSON Test Runner сохраняется локально в игнорируемом TestResults; в Git остаётся сводка.
 
-Для статической `Check-Baseline.ps1` сначала завершить Test Runner и дождаться выхода из PlayMode: тестовый runner временно создаёт/удаляет `Assets/InitTestScene*.unity`, иначе возможна гонка чтения файлов. Это сбой конкурентного запуска проверки, а не broken asset. На текущей среде ADB daemon не запускается (`cannot connect to daemon`); Android-приёмка не выполнена, вместо неё не засчитывать PM.
+Для статической `Check-Baseline.ps1` сначала завершить Test Runner и дождаться выхода из PlayMode: тестовый runner временно создаёт/удаляет `Assets/InitTestScene*.unity`, иначе возможна гонка чтения файлов. Это сбой конкурентного запуска проверки, а не broken asset. ADB на альтернативном порту запустился, но не обнаружил устройства. Результаты прогона на Samsung S25 Ultra не зафиксированы.
+
+В T03a три EditMode-теста `AshBeacon.Tests.ArtImportTests` проверяют раскладку Tilemap 2 × 2, настройки импорта, смену кадров и сохранность ссылок после Reimport. В отрицательном сценарии временная копия пола при 16 PPU занимает две клетки по каждой оси. [Воспроизведение и результаты](reports/T03a-art-import.md).
 
 | Уровень | Что проверять | Когда |
 |---|---|---|
@@ -65,7 +67,7 @@ T03: **REVIEW**, Unity Editor 6000.6.10f1: EditMode **11/11**, PlayMode **9/9**,
 1. Установить через Unity Hub **6000.6.10f1** и Android Build Support с SDK/NDK/OpenJDK этой версии, проверить лицензию. Не открывать проект более новым Editor автоматически.
 2. При клонировании проверить Git LFS: `.gitattributes` уже направляет изображения/аудио и другие бинарные файлы в LFS. Выполнить `git lfs install`, `git lfs pull` при наличии LFS-объектов; не коммитить указатели вместо отсутствующих ассетов.
 3. Открыть корень проекта, дождаться восстановления пакетов из manifest/lock и импорта. Console без ошибок, Missing Script/asset; включены Visible Meta Files и Force Text (проверить, не считать настроенными заранее).
-4. Стартовая сцена — `Assets/Scenes/Bootstrap.unity`: меню → пустая комната → меню. Открыть её вручную; не переопределять Play Mode Start Scene, чтобы Test Runner запускал собственную сцену. Профиль Android Development создаётся в T06.
+4. Стартовая сцена — `Assets/Scenes/Bootstrap.unity`: меню → проверочная комната с двумя мишенями → меню. Открыть её вручную. Для тестов оставить Play Mode Start Scene без переопределения. Профиль Android Development создаётся в T06.
 5. Запустить EditMode и PlayMode через Window → General → Test Runner. Отсутствие тестов не означает зелёную приёмку.
 
 `.env` в runtime не нужен: игра офлайн, конфигурация баланса хранится в definitions. `.env.example` сейчас не создаётся. Локальный путь Editor задаётся переменной PowerShell, секреты release/CI — защищёнными переменными CI и внешним keystore, никогда Assets/Resources/StreamingAssets.

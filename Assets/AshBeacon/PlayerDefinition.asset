@@ -14,3 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: AshBeacon.UnityAdapters::AshBeacon.UnityAdapters.PlayerDefinition
   speed: 3.5
   bodySize: {x: 0.65, y: 0.65}
+  startingHearts: 3
+  swordLevel: 1
+  shieldLevel: 1

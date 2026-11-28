@@ -20,15 +20,22 @@ namespace AshBeacon.UnityAdapters
         private bool touchSword, awaitingNeutral;
         private float previousTimeScale;
         private ControlFeedback pauseFeedback, wheelFeedback;
+        private CombatPrototypeView combatView;
         public PlayerControls Controls { get; private set; }
         public PlayerMotor Motor => motor;
+        public CombatArena Combat { get; private set; }
 
         private void Awake()
         {
             Controls = new PlayerControls();
             pauseFeedback = new ControlFeedback(pauseButton.targetGraphic);
             wheelFeedback = new ControlFeedback(wheelButton.targetGraphic);
-            motor.Initialize(Controls, definition);
+            var fontTemplate = pauseButton.GetComponentInChildren<Text>(true);
+            combatView = new CombatPrototypeView(transform, motor.GetComponentInChildren<MeshRenderer>(),
+                pauseButton.transform.parent, fontTemplate);
+            Combat = new CombatArena(definition, combatView);
+            combatView.AddTargets(Combat);
+            motor.Initialize(Controls, definition, Combat);
             foreach (var control in touchControls) control.Initialize(this);
             actions = new InputActionMap("PrototypeGameplay");
             move = actions.AddAction("Move", InputActionType.Value);
@@ -53,6 +60,7 @@ namespace AshBeacon.UnityAdapters
             pauseIndicator.SetActive(false);
             wheelIndicator.SetActive(false);
             actions.Enable();
+            motor.enabled = true;
         }
         private void Update()
         {
@@ -112,6 +120,7 @@ namespace AshBeacon.UnityAdapters
         private void OnApplicationPause(bool paused) { if (Controls != null) SetPause(PauseReason.Background, paused); }
         private void OnDisable()
         {
+            if (actions == null) return;
             actions.Disable();
             pauseFeedback.Apply(false);
             wheelFeedback.Apply(false);
@@ -119,14 +128,15 @@ namespace AshBeacon.UnityAdapters
             Controls.ClearInput();
             foreach (PauseReason reason in System.Enum.GetValues(typeof(PauseReason))) Controls.SetPause(reason, false);
             awaitingNeutral = true;
-            if (motor != null) motor.Stop();
+            if (motor != null) motor.enabled = false;
             Time.timeScale = previousTimeScale;
         }
         private void OnDestroy()
         {
             if (pauseButton != null) pauseButton.onClick.RemoveListener(ToggleMenu);
             if (wheelButton != null) wheelButton.onClick.RemoveListener(ToggleWheel);
-            actions.Dispose();
+            actions?.Dispose();
+            combatView?.Dispose();
         }
     }
 }

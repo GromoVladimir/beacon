@@ -1,0 +1,6 @@
+{
+  "name": "AshBeacon.ArtImportTests",
+  "rootNamespace": "AshBeacon.Tests",
+  "includePlatforms": ["Editor"],
+  "optionalUnityReferences": ["TestAssemblies"]
+}

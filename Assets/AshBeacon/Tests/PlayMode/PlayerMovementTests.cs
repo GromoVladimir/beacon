@@ -17,6 +17,8 @@ namespace AshBeacon.Tests
     {
         private GameplayController game;
         private Keyboard keyboard;
+        private InputSettings.BackgroundBehavior backgroundBehavior;
+        private InputSettings.EditorInputBehaviorInPlayMode editorInputBehavior;
 
         [UnitySetUp]
         public IEnumerator SetUp()
@@ -24,6 +26,11 @@ namespace AshBeacon.Tests
             foreach (var root in Object.FindObjectsByType<BootstrapRoot>()) Object.Destroy(root.gameObject);
             yield return null;
             Time.timeScale = 1;
+            // CLI runs may leave the Game view unfocused. Keep synthetic input in the player loop.
+            backgroundBehavior = InputSystem.settings.backgroundBehavior;
+            editorInputBehavior = InputSystem.settings.editorInputBehaviorInPlayMode;
+            InputSystem.settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
+            InputSystem.settings.editorInputBehaviorInPlayMode = InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
             keyboard = InputSystem.AddDevice<Keyboard>();
             yield return SceneManager.LoadSceneAsync(UnitySceneLoader.GameplayPath);
             yield return null;
@@ -38,6 +45,8 @@ namespace AshBeacon.Tests
             var previous = SceneManager.GetActiveScene();
             SceneManager.SetActiveScene(SceneManager.CreateScene("T03TestCleanup"));
             yield return SceneManager.UnloadSceneAsync(previous);
+            InputSystem.settings.editorInputBehaviorInPlayMode = editorInputBehavior;
+            InputSystem.settings.backgroundBehavior = backgroundBehavior;
             Assert.That(Time.timeScale, Is.EqualTo(1));
         }
 
@@ -207,7 +216,9 @@ namespace AshBeacon.Tests
             Assert.That(game.Controls.SwordHeld, Is.False);
             Assert.That(game.Controls.Move.X, Is.Zero);
             Keys(); yield return null; yield return null;
-            Keys(Key.D,Key.J); yield return null; yield return Steps(3);
+            Keys(Key.D,Key.J); yield return null;
+            // The paused swing resumes first; movement returns during its recovery.
+            yield return Steps(10);
             Assert.That(game.Controls.SwordHeld, Is.True);
             Assert.That(game.Motor.Body.position.x, Is.GreaterThan(position.x));
             game.ToggleWheel();

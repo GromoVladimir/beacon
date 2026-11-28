@@ -13,14 +13,14 @@ TagManager:
   - UI
   - 
   - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - WorldSolid
+  - PlayerBody
+  - EnemyBody
+  - PlayerHitbox
+  - EnemyHitbox
+  - Projectile
+  - Trigger
+  - Pickup
   - 
   - 
   - 
