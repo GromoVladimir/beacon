@@ -19,12 +19,15 @@ namespace AshBeacon.UnityAdapters
         private Vector2 touchMove;
         private bool touchSword, awaitingNeutral;
         private float previousTimeScale;
+        private ControlFeedback pauseFeedback, wheelFeedback;
         public PlayerControls Controls { get; private set; }
         public PlayerMotor Motor => motor;
 
         private void Awake()
         {
             Controls = new PlayerControls();
+            pauseFeedback = new ControlFeedback(pauseButton.targetGraphic);
+            wheelFeedback = new ControlFeedback(wheelButton.targetGraphic);
             motor.Initialize(Controls, definition);
             foreach (var control in touchControls) control.Initialize(this);
             actions = new InputActionMap("PrototypeGameplay");
@@ -71,6 +74,17 @@ namespace AshBeacon.UnityAdapters
         }
 
         public void SetTouchMove(Vector2 value) { touchMove = value; }
+        public bool IsKeyboardHeld(TouchControlKind kind)
+        {
+            if (!isActiveAndEnabled || Controls.IsPaused || awaitingNeutral) return false;
+            return kind == TouchControlKind.Item ? item.IsPressed() :
+                kind == TouchControlKind.Interact && interact.IsPressed();
+        }
+        private void LateUpdate()
+        {
+            pauseFeedback.Apply(Controls.HasPause(PauseReason.Menu));
+            wheelFeedback.Apply(Controls.HasPause(PauseReason.ItemWheel));
+        }
         public void SetTouchButton(TouchControlKind kind, bool held)
         {
             if (kind == TouchControlKind.Sword) { touchSword = held; Controls.SetSword(held || (sword != null && sword.IsPressed())); }
@@ -99,6 +113,8 @@ namespace AshBeacon.UnityAdapters
         private void OnDisable()
         {
             actions.Disable();
+            pauseFeedback.Apply(false);
+            wheelFeedback.Apply(false);
             foreach (var control in touchControls) control.ResetControl();
             Controls.ClearInput();
             foreach (PauseReason reason in System.Enum.GetValues(typeof(PauseReason))) Controls.SetPause(reason, false);

@@ -48,6 +48,66 @@ namespace AshBeacon.Tests
         }
 
         [UnityTest]
+        public IEnumerator ActionButtonsShowIndependentHoldsAndClearOnFocusLoss()
+        {
+            var buttons = Object.FindObjectsByType<TouchControl>().Where(x => x.Kind != TouchControlKind.Stick).ToArray();
+            var colors = buttons.Select(x => x.GetComponent<UnityEngine.UI.Graphic>().color).ToArray();
+            var scales = buttons.Select(x => x.transform.localScale).ToArray();
+            for (int i = 0; i < buttons.Length; i++)
+                buttons[i].OnPointerDown(new PointerEventData(EventSystem.current) { pointerId = 200 + i });
+            yield return null; yield return null;
+            for (int i = 0; i < buttons.Length; i++)
+            {
+                Assert.That(buttons[i].GetComponent<UnityEngine.UI.Graphic>().color, Is.Not.EqualTo(colors[i]));
+                Assert.That(buttons[i].transform.localScale.x, Is.EqualTo(scales[i].x * .94f).Within(.001f));
+            }
+            buttons[0].OnPointerUp(new PointerEventData(EventSystem.current) { pointerId = 999 });
+            yield return null; yield return null;
+            Assert.That(buttons[0].transform.localScale.x, Is.EqualTo(scales[0].x * .94f).Within(.001f));
+            buttons[0].OnPointerUp(new PointerEventData(EventSystem.current) { pointerId = 200 });
+            yield return null; yield return null;
+            Assert.That(buttons[0].GetComponent<UnityEngine.UI.Graphic>().color, Is.EqualTo(colors[0]));
+            Assert.That(buttons[1].GetComponent<UnityEngine.UI.Graphic>().color, Is.Not.EqualTo(colors[1]));
+            game.SendMessage("OnApplicationFocus", false);
+            yield return null; yield return null;
+            for (int i = 0; i < buttons.Length; i++)
+            {
+                Assert.That(buttons[i].GetComponent<UnityEngine.UI.Graphic>().color, Is.EqualTo(colors[i]));
+                Assert.That(buttons[i].transform.localScale, Is.EqualTo(scales[i]));
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator KeyboardFeedbackAndMenuHighlightsWorkWhilePaused()
+        {
+            var buttons = Object.FindObjectsByType<TouchControl>().Where(x => x.Kind != TouchControlKind.Stick).ToArray();
+            var colors = buttons.Select(x => x.GetComponent<UnityEngine.UI.Graphic>().color).ToArray();
+            Keys(Key.J, Key.K, Key.E);
+            yield return null; yield return null;
+            for (int i = 0; i < buttons.Length; i++)
+                Assert.That(buttons[i].GetComponent<UnityEngine.UI.Graphic>().color, Is.Not.EqualTo(colors[i]));
+            Keys(); yield return null; yield return null;
+            for (int i = 0; i < buttons.Length; i++)
+                Assert.That(buttons[i].GetComponent<UnityEngine.UI.Graphic>().color, Is.EqualTo(colors[i]));
+            var pause = GameObject.Find("PauseButton").GetComponent<UnityEngine.UI.Button>();
+            var wheel = GameObject.Find("WheelButton").GetComponent<UnityEngine.UI.Button>();
+            var pauseColor = pause.targetGraphic.color;
+            var wheelColor = wheel.targetGraphic.color;
+            game.ToggleMenu(); game.ToggleWheel();
+            yield return null; yield return null;
+            Assert.That(Time.timeScale, Is.Zero);
+            Assert.That(pause.targetGraphic.color, Is.Not.EqualTo(pauseColor));
+            Assert.That(wheel.targetGraphic.color, Is.Not.EqualTo(wheelColor));
+            game.ToggleMenu(); yield return null; yield return null;
+            Assert.That(Time.timeScale, Is.Zero);
+            Assert.That(pause.targetGraphic.color, Is.EqualTo(pauseColor));
+            Assert.That(wheel.targetGraphic.color, Is.Not.EqualTo(wheelColor));
+            game.ToggleWheel(); yield return null; yield return null;
+            Assert.That(wheel.targetGraphic.color, Is.EqualTo(wheelColor));
+            Assert.That(Time.timeScale, Is.EqualTo(1));
+        }
+
+        [UnityTest]
         public IEnumerator KeyboardMovementHasEqualDiagonalSpeedAndStopsOnRelease()
         {
             var body = game.Motor.Body;

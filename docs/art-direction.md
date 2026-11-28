@@ -1,8 +1,8 @@
 # Art Direction и AI Asset Pipeline
 Проект: **Пепельный маяк**  
-Версия: 1.0  
-Статус: Draft / Ready for integration  
-Связанные документы: `ash-beacon-game-design.md`, `docs/tasks.md`, SDD-документы проекта
+Версия 1.1. Художественное направление принято для производства после T03.
+
+Игровые роли задаёт [GDD](../ash-beacon-game-design.md). Порядок выпуска и приёмки пакетов зафиксирован в [плане задач](tasks.md).
 
 ---
 
@@ -193,12 +193,7 @@
 - VFX могут быть 32x32, 64x64 и больше, если это оправдано визуально.
 
 ### 6.3. Pixel density / масштаб
-Рекомендуемое правило для Unity:
-- базово считать, что **1 tile = 1 world unit** или другое единое правило, зафиксированное в проекте;
-- установить единый `Pixels Per Unit` для всех игровых пиксельных спрайтов;
-- рекомендуемое стартовое значение для обсуждения: **PPU = 32**.
-
-> Итоговое значение PPU должно быть единым для всех core-ассетов, если специально не зафиксировано иное.
+Тайл **32 × 32 px** занимает одну клетку размером **1 × 1 Unity unit**. Мировые спрайты импортируются при **32 PPU**. Комната 20 × 12 клеток занимает 640 × 384 исходных пикселя. HUD выводится в разрешении экрана. Основание масштаба записано в [решении A09](decisions.md).
 
 ### 6.4. Настройки импорта в Unity
 Для пиксельных ассетов рекомендуется:
@@ -211,6 +206,8 @@
 - Pixels Per Unit: единое по проекту
 - Wrap Mode: `Clamp` или `Repeat` по типу ассета
 - для tileset / spritesheet обязательно настраивать slicing по сетке
+
+Значения для первого импорта, проверка Android overrides, pivot и повторной нарезки приведены в [профиле импорта](asset-pipeline.md).
 
 ---
 
@@ -322,57 +319,16 @@
 
 ## 9. Приоритетный пакет ассетов для MVP / Vertical Slice
 
-### 9.1. Минимальный обязательный набор
-#### Игрок
-- player_idle
-- player_walk
-- player_attack
-- player_cast
+Имена из художественного брифа ниже можно использовать в промптах. Игровые ID, состояния и очередность выпуска определяет [реестр графики MVP](asset-list.md). Имена файлов после отбора оформляются по §12.
 
-#### Враг
-- enemy_ash_wisp_idle
-- enemy_ash_wisp_move
-- enemy_ash_wisp_hit
-- enemy_ash_wisp_death
-
-#### Окружение
-- floor_stone_01
-- floor_cracked_01
-- wall_ruin_01
-- wall_ruin_corner_01
-- grass_dead_01
-- crystal_patch_01
-- stairs_01
-- doorway_01
-
-#### Интерактивные объекты
-- altar_01
-- chest_01
-- torch_01
-- crystal_node_01
-- switch_01
-
-#### Эффекты
-- vfx_slash_01
-- vfx_spell_cast_01
-- vfx_projectile_01
-- vfx_hit_01
-- vfx_glow_01
-
-#### UI
-- icon_hp
-- icon_mana
-- icon_spell_basic
-- ui_frame_basic
-- ui_button_basic
-
-### 9.2. Назначение MVP-пакета
-Этот пакет нужен для:
-- первого визуального вертикального среза;
-- проверки читаемости;
-- настройки импорта;
-- теста мобильного UX;
-- последующего масштабирования библиотеки ассетов.
+| Семейство | Образы из брифа | Применение в срезе |
+|---|---|---|
+| Герой | `player_idle`, `player_walk`, `player_attack`, `player_cast` | Хранитель с мечом и щитом. Жест применения предмета используется для броска бумеранга |
+| Враг | `enemy_ash_wisp` в состояниях idle, move, hit и death | Пепельный дух — поисковый образ палитры. Игровые силуэты создаются для E01, E03, E04, E06 и B1 |
+| Тайлы | `floor_stone_01`, `floor_cracked_01`, `wall_ruin_01`, `wall_ruin_corner_01`, `grass_dead_01`, `crystal_patch_01`, `stairs_01`, `doorway_01` | Поверхность и храм. Кристаллические вкрапления и трещины пола остаются различимы рядом с игровыми сигналами |
+| Объекты | `altar_01`, `chest_01`, `torch_01`, `crystal_node_01`, `switch_01` | Пьедестал, сундук, плита и кольцо имеют игровые состояния. Факелы и кристаллы задают световые акценты |
+| Эффекты | `vfx_slash_01`, `vfx_spell_cast_01`, `vfx_projectile_01`, `vfx_hit_01`, `vfx_glow_01` | Взмах, волна меча, семя, попадание, активация кольца и подсветка узла B1 |
+| UI | `icon_hp`, `icon_mana`, `icon_spell_basic`, `ui_frame_basic`, `ui_button_basic` | Сердце, рамка и кнопка идут в HUD. Эскизы маны и заклинания служат поиску цвета. В активном слоте показывается выбранный предмет GDD |
 
 ---
 
@@ -435,48 +391,9 @@
 
 ---
 
-## 11. Рекомендации по структуре папок в Unity
+## 11. Размещение файлов
 
-Пример:
-Assets/
-  Art/
-    Characters/
-      Player/
-      Enemies/
-      NPC/
-      Bosses/
-    Environment/
-      Tilesets/
-      Biomes/
-      Ruins/
-      Lighthouse/
-    Props/
-      Interactive/
-      Decorative/
-    VFX/
-      Combat/
-      Magic/
-      Ambient/
-    UI/
-      Icons/
-      Panels/
-      Buttons/
-      Markers/
-    SourceAI/
-      Prompts/
-      References/
-      Generated/
-      Selected/
-  Animations/
-  Tilemaps/
-  Prefabs/
-
-### 11.1. Назначение SourceAI
-Папка `SourceAI` нужна для:
-- хранения промптов;
-- хранения эталонных картинок;
-- хранения исходных AI-сгенерированных вариантов;
-- фиксации выбранных версий для интеграции.
+Для игровой коллекции предусмотрен каталог `Assets/AshBeacon/Art/`, для эталонов, промптов и выбранных исходников — `SourceAI/` в корне репозитория. Каталоги создаются при появлении первого пакета. Назначение каталогов и состав карточки происхождения определены в [правилах производства](asset-pipeline.md).
 
 ---
 
@@ -486,12 +403,12 @@ Assets/
 `<category>_<theme>_<name>_<variant>`
 
 Примеры:
-- `player_mage_idle_01`
-- `enemy_ash_wisp_move_01`
+- `player_keeper_idle_01`
+- `enemy_seed_spitter_tell_01`
 - `env_ruin_floor_cracked_01`
-- `prop_magic_altar_01`
-- `vfx_spell_cast_blue_01`
-- `ui_icon_mana_01`
+- `prop_root_pedestal_01`
+- `vfx_ring_activation_cyan_01`
+- `ui_item_boomerang_01`
 
 ### 12.2. Правила
 - только lowercase
@@ -501,8 +418,8 @@ Assets/
 - для spritesheet указывать тип анимации
 
 Примеры:
-- `player_mage_walk_sheet_01`
-- `enemy_guardian_attack_sheet_01`
+- `player_keeper_walk_sheet_01`
+- `enemy_bone_warrior_attack_sheet_01`
 
 ---
 
@@ -550,40 +467,8 @@ art_direction:
     - props
     - vfx
     - ui
-  mvp_assets:
-    characters:
-      - player_idle
-      - player_walk
-      - player_attack
-      - player_cast
-      - enemy_ash_wisp
-    environment:
-      - floor_stone_01
-      - floor_cracked_01
-      - wall_ruin_01
-      - wall_ruin_corner_01
-      - grass_dead_01
-      - crystal_patch_01
-      - stairs_01
-      - doorway_01
-    props:
-      - altar_01
-      - chest_01
-      - torch_01
-      - crystal_node_01
-      - switch_01
-    vfx:
-      - vfx_slash_01
-      - vfx_spell_cast_01
-      - vfx_projectile_01
-      - vfx_hit_01
-      - vfx_glow_01
-    ui:
-      - icon_hp
-      - icon_mana
-      - icon_spell_basic
-      - ui_frame_basic
-      - ui_button_basic
+  mvp_asset_inventory: "docs/asset-list.md"
+  import_and_provenance: "docs/asset-pipeline.md"
   ai_pipeline:
     use_anchor_set: true
     generate_in_batches: true
@@ -594,3 +479,4 @@ art_direction:
       - enemy_expansion
       - vfx_expansion
       - ui_polish
+```

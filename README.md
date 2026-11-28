@@ -11,6 +11,9 @@
 | [ash-beacon-game-design.md](ash-beacon-game-design.md) | Исходный GDD: механики, точный баланс, графы и реестры |
 | [docs/requirements.md](docs/requirements.md) | FR/NFR, критерии, границы, предположения и вопросы |
 | [docs/architecture.md](docs/architecture.md) | Стек, модули, сцены, данные, сохранения и будущая структура |
+| [docs/art-direction.md](docs/art-direction.md) | Художественное направление, палитра и масштаб |
+| [docs/asset-pipeline.md](docs/asset-pipeline.md) | Генерация, отбор, происхождение, именование и импорт в Unity |
+| [docs/asset-list.md](docs/asset-list.md) | Эталоны, игровые ассеты MVP и очередность расширения |
 | [docs/roadmap.md](docs/roadmap.md) | Этапы S0–S6, состав первого среза и ворота приёмки |
 | [docs/tasks.md](docs/tasks.md) | Задачи, зависимости, статусы и критерии завершения |
 | [docs/testing.md](docs/testing.md) | Регрессия, Android-проверки, сборка и будущий CI |
@@ -21,11 +24,11 @@
 
 Unity **6000.6.10f1**, C#, URP **17.6.0** / 2D Renderer, Input System **1.20.1**, uGUI **2.6.0**, Unity Test Framework **1.8.0**. Точные зависимости — в `Packages/manifest.json` и `packages-lock.json`. Не обновлять Editor/пакеты автоматически.
 
-1. Клонировать `https://github.com/GromoVladimir/beacon.git` (нужен доступ к приватному репозиторию). Установить Git LFS, выполнить `git lfs install` и `git lfs pull` из корня клона; `.gitattributes` содержит правила для бинарных ассетов.
+1. Установить Git LFS и выполнить `git lfs install`. Клонировать проект командой `git clone https://github.com/GromoVladimir/beacon.git`, перейти в `beacon` и выполнить `git lfs pull`.
 2. Через Unity Hub установить точный Editor. Для телефона нужны Android Build Support, SDK/NDK/OpenJDK.
 3. Добавить корень репозитория как существующий проект и дождаться восстановления пакетов/импорта.
 4. Открыть `Assets/Scenes/Bootstrap.unity` и нажать Play. В меню выбрать «Начать прототип», в Gameplay — «В главное меню». Доступны движение WASD/стрелками или левым стиком, J/K/E — команды действий, Esc — пауза, Tab — выбор предмета. Бой появится в T04. Не закреплять Play Mode Start Scene за Bootstrap: это мешает Test Runner.
-5. Перед реализацией прочитать документы и решения T00. Проверки и будущие команды сборки — в [testing.md](docs/testing.md).
+5. Для Android APK открыть File → Build Profiles → Android, включить `Development Build` и проверить порядок сцен Bootstrap, MainMenu, Gameplay. Сохранить APK в `Builds/`. Команды тестов и полная инструкция сборки — в [testing.md](docs/testing.md).
 
 ## Проверка файлов проекта
 
@@ -48,6 +51,6 @@ Unity EditMode/PlayMode и Android-сборку. Test asmdef добавлены 
 
 ## Следующий шаг
 
-T01 **DONE**: статический baseline, 15 сценариев валидатора и live-проверка двух сцен через Unity MCP прошли; Console при проверке T01 без ошибок и предупреждений. Исправлены устаревшие ссылки двух ассетов шаблона. Воспроизводимая live-проверка — `tools/Verify-Baseline.cs`; результаты и ограничения — в [отчёте T01](docs/reports/T01-baseline.md). T02 **DONE**: Bootstrap/MainMenu/Gameplay, единственный корень и сессия, пустая комната 20 × 12. EditMode 6/6 и PlayMode 3/3 прошли, интерфейс проверен владельцем; [отчёт T02](docs/reports/T02-bootstrap.md). T03 (ввод, движение, взгляд, пауза) — REVIEW: EditMode 11/11, PlayMode 7/7, требуется Android-приёмка; [отчёт T03](docs/reports/T03-controls.md). T04 не начата. S0 целиком ещё не принят. На Samsung S25 Ultra перед первым замером записать фактическую версию Android, RAM и разрешение.
+T01 **DONE**: статический baseline, 15 сценариев валидатора и live-проверка двух сцен через Unity MCP прошли; Console при проверке T01 без ошибок и предупреждений. Исправлены устаревшие ссылки двух ассетов шаблона. Воспроизводимая live-проверка — `tools/Verify-Baseline.cs`; результаты и ограничения — в [отчёте T01](docs/reports/T01-baseline.md). T02 **DONE**: Bootstrap/MainMenu/Gameplay, единственный корень и сессия, пустая комната 20 × 12. EditMode 6/6 и PlayMode 3/3 прошли, интерфейс проверен владельцем; [отчёт T02](docs/reports/T02-bootstrap.md). T03 (ввод, движение, взгляд, пауза) — REVIEW: EditMode 11/11, PlayMode 9/9, требуется Android-приёмка; [отчёт T03](docs/reports/T03-controls.md). T04 не начата. S0 целиком ещё не принят. На Samsung S25 Ultra перед первым замером записать фактическую версию Android, RAM и разрешение.
 
-При последней подготовке публикации собран Android Development APK T03 (Bootstrap/MainMenu/Gameplay): Succeeded, 0 ошибок, 971 предупреждение. EditMode 11/11, PlayMode 7/7 и статическая проверка прошли. Проверка выполнена в текущем импортированном каталоге, на телефоне APK не запускался; T03 остаётся REVIEW, это не приёмка T06. Подробности — в [отчёте публикации](docs/reports/github-publication.md).
+При подготовке публикации 28.11.2026 собран Android Development APK T03 со сценами Bootstrap, MainMenu и Gameplay. EditMode 11/11, PlayMode 9/9. Сборка завершилась с одним предупреждением о символах отладки и без ошибок. Приёмка на Samsung S25 Ultra остаётся открытой. Подробности — в [отчёте публикации](docs/reports/github-publication.md).

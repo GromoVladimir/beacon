@@ -10,7 +10,7 @@
 |---|---|---|
 | Unity Editor | 6000.6.10f1 | Сохранить версию; обновление отдельной задачей с регрессией |
 | Язык | C# в среде Unity | Без внешнего .NET runtime и отдельного backend |
-| Rendering | URP 17.6.0, Renderer2D | Ортографическая камера, pixel-art 16 PPU, tilemap; эффекты по бюджету устройства |
+| Rendering | URP 17.6.0, Renderer2D | Ортографическая камера и Tilemap. Для игрового арта A09 задаёт 32 PPU и тайл 32 × 32 px на клетку. Эффекты по бюджету устройства |
 | Input | Input System 1.20.1 | Общие команды для touch и клавиатуры |
 | UI | uGUI 2.6.0 | Canvas + TextMeshPro, HUD/меню/touch; не смешивать два UI-стека без причины |
 | Тесты | Unity Test Framework 1.8.0 | EditMode, PlayMode, Android smoke |
@@ -58,6 +58,8 @@ flowchart TD
 | AshBeacon.Editor | Валидатор контента, build entrypoints, удобства authoring | Не попадает в runtime-сборку |
 
 Domain и Application: `noEngineReferences`, независимые от UnityEngine. SO преобразуются в простые definitions/DTO на границе. Сначала минимальные контракты для текущей задачи; не создавать десятки пустых интерфейсов под будущую кампанию.
+
+Спрайты, клипы, Tilemap и uGUI привязываются к представлениям через UnityAdapters, prefab и ссылки в definitions. Состояние героя, фаза атаки и флаги объектов определяют отображаемый кадр. Длительность клипа и контур PNG не задают урон, окно уязвимости или коллайдер. Общие рисунки можно использовать в обоих каталогах с сохранением отдельных ID и профилей VS и campaign. Генератор ИИ работает только при подготовке ресурсов. Стиль определяет [арт-руководство](art-direction.md), путь готового файла до представления — [профиль импорта](asset-pipeline.md).
 
 ## 4. Сцены и игровой цикл
 
@@ -138,7 +140,9 @@ Domain и Application: `noEngineReferences`, независимые от UnityEn
 | `Assets/_Project/Data/VerticalSlice/` | Каталог и определения VS-* |
 | `Assets/_Project/Data/Campaign/` | Overworld, D1…D5, doors/rewards/puzzles |
 | `Assets/_Project/Prefabs/` | Герой, враги, объекты, UI, Rooms/VerticalSlice и Rooms/Campaign |
-| `Assets/_Project/Art/`, `Audio/`, `UI/`, `Settings/` | Ассеты, input actions, материалы, mixer и профили |
+| `Assets/AshBeacon/Art/` | Принятые игровые изображения и клипы. Каталог создаётся с первым пакетом |
+| `SourceAI/` | Материалы производства вне Unity Assets, включая эталоны и происхождение |
+| `Assets/_Project/Audio/`, `UI/`, `Settings/` | Input actions, материалы, mixer и профили |
 | `Assets/_Project/Tests/EditMode/`, `Tests/PlayMode/` | Отдельные test asmdef и fixtures |
 | `Assets/_Project/Tests/Fixtures/` | Минимальные комнаты и тестовые определения |
 | `docs/specs/` | Короткие спецификации задач перед реализацией |
